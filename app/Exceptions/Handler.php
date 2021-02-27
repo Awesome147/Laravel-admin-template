@@ -2,78 +2,90 @@
 
 namespace App\Exceptions;
 
-use Exception;
+use Throwable;
+use Illuminate\Mail\Message;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Spatie\Permission\Exceptions\UnauthorizedException;
 
-/**
- * Class Handler.
- */
 class Handler extends ExceptionHandler
 {
     /**
-     * A list of the exception types that are not reported.
+     * A list of the exception types that should not be reported.
      *
      * @var array
      */
     protected $dontReport = [
-        GeneralException::class,
-    ];
-
-    /**
-     * A list of the inputs that are never flashed for validation exceptions.
-     *
-     * @var array
-     */
-    protected $dontFlash = [
-        'password',
-        'password_confirmation',
+        \Illuminate\Auth\AuthenticationException::class,
+        \Illuminate\Auth\Access\AuthorizationException::class,
+        \Symfony\Component\HttpKernel\Exception\HttpException::class,
+        \Illuminate\Database\Eloquent\ModelNotFoundException::class,
+        \Illuminate\Session\TokenMismatchException::class,
+        \Illuminate\Validation\ValidationException::class,
     ];
 
     /**
      * Report or log an exception.
      *
-     * @param Exception $exception
+     * @param Throwable $exception
+     * @return void
      *
-     * @throws Exception
-     * @return mixed|void
+     * @throws \Exception
      */
-    public function report(Exception $exception)
+    public function report(Throwable $exception)
     {
         parent::report($exception);
+
+        // send error to developers emails
+        $this->sendReport($exception);
     }
 
     /**
      * Render an exception into an HTTP response.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Exception  $exception
+     * @param \Illuminate\Http\Request $request
+     * @param \Throwable $exception
      * @return \Symfony\Component\HttpFoundation\Response
      *
-     * @throws \Exception
+     * @throws \Throwable
      */
-    public function render($request, Exception $exception)
+    public function render($request, Throwable $exception)
     {
-        if ($exception instanceof UnauthorizedException) {
-            return redirect()
-                ->route(home_route())
-                ->withFlashDanger(__('auth.general_error'));
-        }
-
         return parent::render($request, $exception);
     }
 
     /**
-     * @param \Illuminate\Http\Request $request
-     * @param AuthenticationException  $exception
+     * Convert an authentication exception into a response.
      *
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
+     * @param \Illuminate\Http\Request $request
+     * @param \Illuminate\Auth\AuthenticationException $exception
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     protected function unauthenticated($request, AuthenticationException $exception)
     {
-        return $request->expectsJson()
-            ? response()->json(['message' => 'Unauthenticated.'], 401)
-            : redirect()->guest(route('frontend.auth.login'));
+        if ($request->expectsJson()) {
+            return response()->json(['error' => __('exception.unauthenticated')], 401);
+        }
+
+        return redirect()->guest(route('login'));
+    }
+
+    /**
+     * Send exception report to emails.
+     *
+     * @param $exception
+     */
+    protected function sendReport(Throwable $exception)
+    {
+        if (parent::shouldntReport($exception)) return;
+
+        $emails = config('app.debug_emails');
+
+        if (!$emails) return;
+
+        $emails = is_string($emails) ? explode(',', $emails) : $emails;
+
+        \Mail::raw((string)$exception, function (Message $message) use ($exception, $emails) {
+            $message->to($emails)->subject(config('app.name') . ' ' . config('app.env') . ' | Error ' . class_basename($exception));
+        });
     }
 }

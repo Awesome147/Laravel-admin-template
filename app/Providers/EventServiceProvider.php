@@ -2,11 +2,20 @@
 
 namespace App\Providers;
 
+use App\Events\Auth\SocialLogin;
+use App\Listeners\Auth\LoginListener;
+use App\Listeners\Auth\LogoutListener;
+use App\Listeners\Auth\LogVerifiedUser;
+use App\Listeners\Auth\RegisteredListener;
+use App\Listeners\Auth\SocialLoginListener;
+use Illuminate\Auth\Events\Login;
+use Illuminate\Auth\Events\Logout;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Auth\Events\Verified;
+use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
-/**
- * Class EventServiceProvider.
- */
 class EventServiceProvider extends ServiceProvider
 {
     /**
@@ -15,44 +24,22 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        //
-    ];
-
-    /**
-     * Class event subscribers.
-     *
-     * @var array
-     */
-    protected $subscribe = [
-        // Frontend Subscribers
-
-        // Auth Subscribers
-        \App\Listeners\Frontend\Auth\UserEventListener::class,
-
-        // Backend Subscribers
-
-        // Auth Subscribers
-        \App\Listeners\Backend\Auth\User\UserEventListener::class,
-        \App\Listeners\Backend\Auth\Role\RoleEventListener::class,
+        Login::class => [LoginListener::class],
+        Logout::class => [LogoutListener::class],
+        Registered::class => [RegisteredListener::class, SendEmailVerificationNotification::class],
+        SocialLogin::class => [SocialLoginListener::class],
+        Verified:: class => [LogVerifiedUser::class],
     ];
 
     /**
      * Register any events for your application.
+     *
+     * @return void
      */
     public function boot()
     {
         parent::boot();
 
         //
-    }
-
-    /**
-     * Determine if events and listeners should be automatically discovered.
-     *
-     * @return bool
-     */
-    public function shouldDiscoverEvents()
-    {
-        return false;
     }
 }

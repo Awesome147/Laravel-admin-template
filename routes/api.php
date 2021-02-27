@@ -1,7 +1,8 @@
 <?php
 
 use Illuminate\Http\Request;
-
+use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\CommonController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -13,6 +14,16 @@ use Illuminate\Http\Request;
 |
 */
 
-/*Route::middleware('auth:api')->get('/user', function (Request $request) {
+Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
-});*/
+});
+
+
+Route::post('/login', [AuthController::class,'isLogin']) ;
+Route::post('/register', [AuthController::class,'getRegisterUser']) ;
+
+
+
+//CommonController
+Route::post('/subscriptions', [CommonController::class,'getSubscription']) ;
+Route::post('/subscription-purchase', [CommonController::class,'getSubscriptionPurchase']) ;

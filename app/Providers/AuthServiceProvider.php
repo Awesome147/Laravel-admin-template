@@ -2,12 +2,12 @@
 
 namespace App\Providers;
 
-use Gate;
+use App\Models\Auth\User\User;
+use App\Policies\Backend\BackendPolicy;
+use App\Policies\Models\User\UserPolicy;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
-
-/**
- * Class AuthServiceProvider.
- */
+use Laravel\Passport\Passport;
 class AuthServiceProvider extends ServiceProvider
 {
     /**
@@ -16,20 +16,26 @@ class AuthServiceProvider extends ServiceProvider
      * @var array
      */
     protected $policies = [
-        // 'App\Model' => 'App\Policies\ModelPolicy',
+        /**
+         * Models Policies
+         */
+        'App\Model' => 'App\Policies\ModelPolicy',
+        User::class => UserPolicy::class,
+        /**
+         * Without models policies
+         */
+        'backend' => BackendPolicy::class
     ];
 
     /**
      * Register any authentication / authorization services.
+     *
+     * @return void
      */
     public function boot()
     {
         $this->registerPolicies();
 
-        // Implicitly grant "Admin" role all permissions
-        // This works in the app by using gate-related functions like auth()->user->can() and @can()
-        Gate::before(function ($user) {
-            return $user->hasRole(config('access.users.admin_role')) ? true : null;
-        });
+        Passport::routes();
     }
 }

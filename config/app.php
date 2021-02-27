@@ -4,26 +4,15 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Application Is In Read Only Mode
-    |--------------------------------------------------------------------------
-    |
-    | This value is for whether the project is in read only mode or not.
-    |
-    */
-    'read_only' => env('APP_READ_ONLY', false),
-
-    /*
-    |--------------------------------------------------------------------------
     | Application Name
     |--------------------------------------------------------------------------
     |
     | This value is the name of your application. This value is used when the
     | framework needs to place the application's name in a notification or
     | any other location as required by the application or its packages.
-    |
     */
 
-    'name' => env('APP_NAME', 'Laravel '.app()->version().' Boilerplate'),
+    'name' => env('APP_NAME', 'Laravel Labs64 Boilerplate'),
 
     /*
     |--------------------------------------------------------------------------
@@ -32,7 +21,7 @@ return [
     |
     | This value determines the "environment" your application is currently
     | running in. This may determine how you prefer to configure various
-    | services the application utilizes. Set this in your ".env" file.
+    | services your application utilizes. Set this in your ".env" file.
     |
     */
 
@@ -50,17 +39,7 @@ return [
     */
 
     'debug' => env('APP_DEBUG', false),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Application Testing Mode
-    |--------------------------------------------------------------------------
-    |
-    | When your application is currently running tests
-    |
-    */
-
-    'testing' => env('APP_TESTING', false),
+    'debug_emails' => env('APP_DEBUG_EMAILS', false),
 
     /*
     |--------------------------------------------------------------------------
@@ -75,8 +54,6 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
-    'asset_url' => env('ASSET_URL', null),
-
     /*
     |--------------------------------------------------------------------------
     | Application Timezone
@@ -88,7 +65,7 @@ return [
     |
     */
 
-    'timezone' => env('APP_TIMEZONE', 'UTC'),
+    'timezone' => 'UTC',
 
     /*
     |--------------------------------------------------------------------------
@@ -118,26 +95,15 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Faker Locale
+    | Additional Locales
     |--------------------------------------------------------------------------
     |
-    | This locale will be used by the Faker PHP library when generating fake
-    | data for your database seeds. For example, this will be used to get
-    | localized telephone numbers, street address information and more.
+    | The list of additional allowed locales is used when choosing a better locale for the user, adds multilanguage.
+    | Enter the locales separating them with a comma.
     |
     */
-    'faker_locale' => 'en_US',
 
-    /*
-    |--------------------------------------------------------------------------
-    | PHP Locale Code
-    |--------------------------------------------------------------------------
-    |
-    | The PHP locale determines the default locale that will be used
-    | by the Carbon library when setting Carbon's localization.
-    |
-    */
-    'locale_php' => env('APP_LOCALE_PHP', 'en_US'),
+    'locales' => env('APP_LOCALES'),
 
     /*
     |--------------------------------------------------------------------------
@@ -166,7 +132,10 @@ return [
     */
 
     'providers' => [
-        // Laravel Framework Service Providers...
+
+        /*
+         * Laravel Framework Service Providers...
+         */
         Illuminate\Auth\AuthServiceProvider::class,
         Illuminate\Broadcasting\BroadcastServiceProvider::class,
         Illuminate\Bus\BusServiceProvider::class,
@@ -190,17 +159,30 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
 
-        // Package Service Providers that aren't auto-discover...
+        /*
+         * Package Service Providers...
+         */
+        Laravel\Tinker\TinkerServiceProvider::class,
+        Arcanedev\LogViewer\LogViewerServiceProvider::class,
+        Collective\Html\HtmlServiceProvider::class,
+        Creativeorange\Gravatar\GravatarServiceProvider::class,
+        DaveJamesMiller\Breadcrumbs\BreadcrumbsServiceProvider::class,
+        Laravel\Socialite\SocialiteServiceProvider::class,
+        AlbertCht\InvisibleReCaptcha\InvisibleReCaptchaServiceProvider::class,
 
-        // Application Service Providers...
+        /*
+         * Application Service Providers...
+         */
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
         // App\Providers\BroadcastServiceProvider::class,
-        App\Providers\ComposerServiceProvider::class,
         App\Providers\EventServiceProvider::class,
-        App\Providers\HelperServiceProvider::class,
-        App\Providers\ObserverServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        \App\Providers\ToJsServiceProvider::class,
+        \App\Providers\MetaServiceProvider::class,
+        Kyslik\ColumnSortable\ColumnSortableServiceProvider::class,
+        \App\Providers\ProtectionProvider::class
+
     ],
 
     /*
@@ -215,8 +197,8 @@ return [
     */
 
     'aliases' => [
+
         'App' => Illuminate\Support\Facades\App::class,
-        'Arr' => Illuminate\Support\Arr::class,
         'Artisan' => Illuminate\Support\Facades\Artisan::class,
         'Auth' => Illuminate\Support\Facades\Auth::class,
         'Blade' => Illuminate\Support\Facades\Blade::class,
@@ -246,9 +228,22 @@ return [
         'Schema' => Illuminate\Support\Facades\Schema::class,
         'Session' => Illuminate\Support\Facades\Session::class,
         'Storage' => Illuminate\Support\Facades\Storage::class,
-        'Str' => Illuminate\Support\Str::class,
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
+
+        /*
+        * Third Party Aliases
+        */
+        'Breadcrumbs' => DaveJamesMiller\Breadcrumbs\Facade::class,
+        'Form' => Collective\Html\FormFacade::class,
+        'Html' => Collective\Html\HtmlFacade::class,
+        'Gravatar' => Creativeorange\Gravatar\Facades\Gravatar::class,
+        'Socialite' => Laravel\Socialite\Facades\Socialite::class,
+        'ToJs' => \App\Helpers\ToJs\Facades\ToJsFacade::class,
+        'Meta' => \App\Helpers\Meta\Facades\MetaFacade::class,
+        'ApiHelper' => \App\Helpers\ApiHelper::class
+
     ],
+
 ];
