@@ -13,7 +13,7 @@
     "guidechimp": "^2.6",
     "axios": "^0.21.1",
     "bootstrap": "^3.4",
-    "cross-env": "^7.0.2",
+    "cross-env": "^7.0.3",
     "font-awesome": "^4.7.0",
     "gentelella": "^1.4",
     "jcarousel": "^0.3.9",
